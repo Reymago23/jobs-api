@@ -12,9 +12,15 @@ const login = async (req, res) => {
     if (!email || !password) {
         throw new BadRequestError('Please provide email and password')
     }
-
     const user = await User.findOne({ email })
-    res.send('login route')
+    if (!user) {
+        throw new UnauthenticatedError('Unable to find a user with that email.')
+    }
+    const isPasswordCorrect = await user.comparePassword(password)
+    if (!isPasswordCorrect) {
+        throw new UnauthenticatedError('invalid email or password')
+    }
+    res.status(StatusCodes.OK).json({ user: { name: user.name }, token: user.createJWT() })
 }
 
 
