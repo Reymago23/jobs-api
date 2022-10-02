@@ -9,6 +9,10 @@ const errorHandlerMiddleware = (err, req, res, next) => {
     customError.msg = Object.values(err.errors).map(item => item.message).join(', ')
     customError.statusCode = StatusCodes.BAD_REQUEST
   }
+  if (err.name == 'CastError') {
+    customError.msg = `Invalid format for id, we received: ${err.value}`
+    customError.statusCode = StatusCodes.BAD_REQUEST
+  }
   if (err.code && err.code === 11000) {
     customError.msg = `Duplicate value for ${Object.keys(err.keyValue)}, please choose another value and try again.`
     customError.statusCode = StatusCodes.BAD_REQUEST
